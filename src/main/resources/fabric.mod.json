@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "freemodelrotation",
+  "version": "${version}",
+  "name": "Free Model Rotation",
+  "description": "Removes the 22.5-degree increment and single-axis limits on item/block model element rotation, and adds multi-axis (x/y/z) rotation. Backports the arbitrary Blockbench rotation format (vanilla snapshot 25w46a / 1.21.11+) to older versions. Client-side, drop-in: install it and your resource-pack models with free angles render correctly. Note: models with free angles only render correctly for players who have this mod installed.",
+  "authors": [
+    "HoshiGroup"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/freemodelrotation",
+    "sources": "https://github.com/Yuupering/FreeModelRotation"
+  },
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "io.github.yuupering.freemodelrotation.FreeModelRotationClient"
+    ]
+  },
+  "mixins": [
+    "freemodelrotation.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16",
+    "minecraft": ">=${minecraft_version}",
+    "java": ">=${java_version}"
+  }
+}

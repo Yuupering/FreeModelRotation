@@ -1,0 +1,68 @@
+plugins {
+    id 'fabric-loom' version '1.6-SNAPSHOT'
+}
+
+// jar 버전 = 모드버전+MC버전 (예: 1.0.0+1.20.1) — 모드린스 관례.
+version = "${project.mod_version}+${project.minecraft_version}"
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+repositories {
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    // fabric-api 불필요 — 순수 Mixin + ClientModInitializer(loader 제공)만 사용.
+}
+
+// 버전별 Java: 1.20.4 이하 = 17, 1.20.5+ = 21. mixin compatibilityLevel도 연동.
+def java17 = ["1.20.1", "1.20.2", "1.20.3", "1.20.4"].contains(project.minecraft_version)
+def targetJavaVersion = java17 ? 17 : 21
+def mixinCompat = java17 ? "JAVA_17" : "JAVA_21"
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "minecraft_version", project.minecraft_version
+    inputs.property "java_version", targetJavaVersion
+    inputs.property "mixin_compat", mixinCompat
+    filteringCharset "UTF-8"
+
+    filesMatching(["fabric.mod.json", "freemodelrotation.mixins.json"]) {
+        expand "version": project.version,
+                "minecraft_version": project.minecraft_version,
+                "java_version": targetJavaVersion,
+                "mixin_compat": mixinCompat
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    it.options.encoding = "UTF-8"
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        it.options.release.set(targetJavaVersion)
+    }
+}
+
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+    withSourcesJar()
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}" }
+    }
+}
+
+// 빌드마다 동일한 jar 해시 보장 (타임스탬프 제거 + 순서 고정).
+tasks.withType(AbstractArchiveTask).configureEach {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}

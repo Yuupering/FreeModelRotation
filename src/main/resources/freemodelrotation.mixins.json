@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "io.github.yuupering.freemodelrotation.mixin",
+  "compatibilityLevel": "${mixin_compat}",
+  "mixins": [],
+  "client": [
+    "ModelAngleLimitMixin",
+    "ModelMultiAxisRotationMixin",
+    "BakedQuadFactoryMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

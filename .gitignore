@@ -15,3 +15,6 @@ run/
 .project
 bin/
 .vscode/
+
+# AI 작업 메모 — 저장소에 올리지 않음(로컬 전용)
+CLAUDE.md
